@@ -8,7 +8,7 @@ public class ArbolExpresionGrafico extends JPanel {
 
     private static final long serialVersionUID = 8174307315556607306L;
 
-    private ArbodeExpresiones miArbol;
+    private ArbolExpresion miArbol;
     private HashMap<Nodo, Rectangle> posicionNodos = null;
     private HashMap<Nodo, Dimension> subtreeSizes = null;
     private boolean dirty = true;
@@ -16,7 +16,7 @@ public class ArbolExpresionGrafico extends JPanel {
     private Dimension empty = new Dimension(0, 0);
     private FontMetrics fm = null;
 
-    public ArbolExpresionGrafico(ArbodeExpresiones miArbol) {
+    public ArbolExpresionGrafico(ArbolExpresion miArbol) {
         this.miArbol = miArbol;
         this.setBackground(Color.WHITE);
         posicionNodos = new HashMap<>();

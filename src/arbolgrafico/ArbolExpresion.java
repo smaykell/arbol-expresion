@@ -3,18 +3,22 @@ package arbolgrafico;
 import java.util.*;
 import javax.swing.JPanel;
 
-public class ArbodeExpresiones {
-	Stack<Nodo> pOperandos = new Stack<Nodo>();
-	Stack<String> pOperadores = new Stack<String>();
+public class ArbolExpresion {
 
 	private Nodo raiz;
+	private Stack<Nodo> pOperandos;
+	private Stack<String> pOperadores;
+	private final String blanco;
+	private final String operadores;
+	private String prefija;
+	private String infija;
+	private String postfija;
 
-	final String blanco;
-	final String operadores;
-
-	public ArbodeExpresiones() {
-		blanco = " \t";
-		operadores = ")+-*/%^(";
+	public ArbolExpresion() {
+		this.blanco = " \t";
+		this.operadores = ")+-*/%^(";
+		this.pOperandos = new Stack<Nodo>();
+		this.pOperadores = new Stack<String>();
 	}
 
 	public Nodo getRaiz() {
@@ -25,14 +29,19 @@ public class ArbodeExpresiones {
 		this.raiz = r;
 	}
 
-	public boolean contruir(String con) {
-		construirArbol(con);
+	public boolean contruir(String expresion) {
+		construirArbol(expresion);
 		return true;
 	}
 
 	public Nodo construirArbol(String expresion) {
+
 		StringTokenizer tokenizer;
 		String token;
+
+		this.prefija = "";
+		this.infija = "";
+		this.postfija = "";
 
 		tokenizer = new StringTokenizer(expresion, blanco + operadores, true);
 		while (tokenizer.hasMoreTokens()) {
@@ -60,15 +69,21 @@ public class ArbodeExpresiones {
 			}
 		}
 
-		raiz = (Nodo) pOperandos.peek();
+		this.raiz = (Nodo) pOperandos.peek();
+
 		while (!pOperadores.empty()) {
 			if (pOperadores.peek().equals("(")) {
 				pOperadores.pop();
 			} else {
 				guardarSubArbol();
-				raiz = (Nodo) pOperandos.peek();
+				this.raiz = (Nodo) pOperandos.peek();
 			}
 		}
+
+		imprimePre(this.raiz);
+		imprimeIn(this.raiz);
+		imprimePos(this.raiz);
+
 		return raiz;
 	}
 
@@ -76,36 +91,46 @@ public class ArbodeExpresiones {
 		Nodo op2 = (Nodo) pOperandos.pop();
 		Nodo op1 = (Nodo) pOperandos.pop();
 		pOperandos.push(new Nodo(op2, pOperadores.pop(), op1));
-
 	}
 
-	public void imprime(Nodo n) {
+	private void imprimeIn(Nodo n) {
 		if (n != null) {
-
-			imprime(n.getNodoDerecho());
-			System.out.print(n.getInformacion() + " ");
-			imprime(n.getNodoIzquierdo());
+			imprimeIn(n.getNodoIzquierdo());
+			this.infija += n.getInformacion() + " ";
+			imprimeIn(n.getNodoDerecho());
 		}
 	}
 
-	public void imprimePos(Nodo n) {
+	private void imprimePos(Nodo n) {
 		if (n != null) {
 			imprimePos(n.getNodoIzquierdo());
 			imprimePos(n.getNodoDerecho());
-			System.out.print(n.getInformacion() + " ");
+			postfija += n.getInformacion() + " ";
 		}
 	}
 
-	public void imprimePre(Nodo n) {
+	private void imprimePre(Nodo n) {
 		if (n != null) {
-			System.out.print(n.getInformacion() + " ");
-
-			imprimePre(n.getNodoDerecho());
+			prefija += n.getInformacion() + " ";
 			imprimePre(n.getNodoIzquierdo());
+			imprimePre(n.getNodoDerecho());
 		}
 	}
 
 	public JPanel getdibujo() {
 		return new ArbolExpresionGrafico(this);
 	}
+
+	public String getPrefija() {
+		return prefija;
+	}
+
+	public String getInfija() {
+		return infija;
+	}
+
+	public String getPostfija() {
+		return postfija;
+	}
+
 }
